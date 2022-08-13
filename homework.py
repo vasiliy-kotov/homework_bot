@@ -56,7 +56,7 @@ gaame = get_api_answer_message_exception
 
 
 def send_message(bot, message):
-    """
+    """.
     Отправляет сообщение в Telegram чат, определяемый переменной
     окружения TELEGRAM_CHAT_ID. Принимает на вход два параметра:
     экземпляр класса Bot и строку с текстом сообщения.
@@ -80,8 +80,7 @@ def send_message(bot, message):
 
 
 def get_api_answer(current_timestamp):
-    """
-    Делает запрос к единственному эндпоинту API-сервиса. В качестве
+    """Делает запрос к единственному эндпоинту API-сервиса. В качестве
     параметра функция получает временную метку.
     """
     timestamp = current_timestamp or int(time.time())
@@ -101,17 +100,6 @@ def get_api_answer(current_timestamp):
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
         # В случае успешного запроса должна вернуть ответ API,
         # преобразовав его из формата JSON к типам данных Python.
-    # Эксперимент по обработке различных видов ошибок
-    except ConnectionError as ce:
-        message_exception = str(
-            f'Ошибка ConnectionError при запросе к API: {ce}.'
-        )
-        if message_exception != gaamce:
-            logger.error(message_exception)
-            send_message(bot, message_exception)
-            gaamce = message_exception
-        else:
-            logger.error(message_exception)
     except Exception as error:
         message_exception = f'Ошибка Exception при запросе к API: {error}'
         if message_exception != gaame:
