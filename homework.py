@@ -133,7 +133,7 @@ def get_api_answer(current_timestamp):
 
 def check_response(response):
     """Проверяет ответ API на корректность.
-    
+
     Получает ответ API, приведенный к типам данных Python.
     """
     try:
@@ -168,7 +168,7 @@ def check_response(response):
 def parse_status(homework):
     """
     Парсит данные о домашних работах.
-    
+
     Извлекает из информации о конкретной домашней работе статус этой
     работы. В качестве параметра функция получает только один элемент
     из списка домашних работ.
@@ -208,7 +208,7 @@ def parse_status(homework):
 
 def check_tokens():
     """Проверяет доступность переменных окружения для работы программы.
-    
+
     Окружения:
     - PRACTICUM_TOKEN,
     - TELEGRAM_TOKEN,
