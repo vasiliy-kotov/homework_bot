@@ -56,10 +56,12 @@ gaame = get_api_answer_message_exception
 
 
 def send_message(bot, message):
-    """.
-    Отправляет сообщение в Telegram чат, определяемый переменной
-    окружения TELEGRAM_CHAT_ID. Принимает на вход два параметра:
-    экземпляр класса Bot и строку с текстом сообщения.
+    """Отправляет сообщение в Telegram чат.
+
+    Чат определяется переменной окружения TELEGRAM_CHAT_ID. Принимает
+    на вход два параметра:
+    - экземпляр класса Bot,
+    - строку с текстом сообщения.
     """
     try:
         TELEGRAM_CHAT_ID
@@ -80,8 +82,9 @@ def send_message(bot, message):
 
 
 def get_api_answer(current_timestamp):
-    """Делает запрос к единственному эндпоинту API-сервиса. В качестве
-    параметра функция получает временную метку.
+    """Делает запрос к единственному эндпоинту API-сервиса.
+
+    В качестве параметра функция получает временную метку.
     """
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
@@ -129,9 +132,9 @@ def get_api_answer(current_timestamp):
 
 
 def check_response(response):
-    """
-    Проверяет ответ API на корректность. Получает ответ API,
-    приведенный к типам данных Python.
+    """Проверяет ответ API на корректность.
+    
+    Получает ответ API, приведенный к типам данных Python.
     """
     try:
         all([TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
@@ -164,6 +167,8 @@ def check_response(response):
 
 def parse_status(homework):
     """
+    Парсит данные о домашних работах.
+    
     Извлекает из информации о конкретной домашней работе статус этой
     работы. В качестве параметра функция получает только один элемент
     из списка домашних работ.
@@ -202,10 +207,14 @@ def parse_status(homework):
 
 
 def check_tokens():
-    """
-    Проверяет доступность переменных окружения, которые необходимы
-    для работы программы. Если отсутствует хотя бы одна переменная
-    окружения — функция должна вернуть False, иначе — True.
+    """Проверяет доступность переменных окружения для работы программы.
+    
+    Окружения:
+    - PRACTICUM_TOKEN,
+    - TELEGRAM_TOKEN,
+    - TELEGRAM_CHAT_ID.
+    Если отсутствует хотя бы одна переменная окружения — функция
+    должна вернуть False, иначе — True.
     """
     return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
