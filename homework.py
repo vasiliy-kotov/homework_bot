@@ -25,10 +25,13 @@ HOMEWORK_STATUSES = {
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
 
-logger = logging.getLogger(__name__)  # Решил потренироваться в создании отдельного логгера
+logger = logging.getLogger(__name__)  # Решил потренироваться в
+# создании отдельного логгера
 logger.setLevel(logging.DEBUG)
 
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s - %(funcName)s')
+formatter = logging.Formatter(
+    '%(asctime)s - %(levelname)s - %(message)s - %(funcName)s'
+    )
 
 # Хэндлер для управления лог-файлами
 handler = RotatingFileHandler(
@@ -43,7 +46,8 @@ stream_handler = logging.StreamHandler(sys.stdout)
 stream_handler.setFormatter(formatter)
 logger.addHandler(stream_handler)
 
-# Ниже представлены переменные для сохранения состояния ошибок и не отправки их в Телеграм при их повторении
+# Ниже представлены переменные для сохранения состояния ошибок и не
+# отправки их в Телеграм при их повторении
 get_api_answer_message_status_code_not_200 = ''
 gaamscn2 = get_api_answer_message_status_code_not_200
 get_api_answer_message_connection_exception = ''
@@ -52,9 +56,9 @@ get_api_answer_message_exception = ''
 gaame = get_api_answer_message_exception
 
 def send_message(bot, message):
-    """Отправляет сообщение в Telegram чат, определяемый переменной окружения
-    TELEGRAM_CHAT_ID. Принимает на вход два параметра: экземпляр класса
-    Bot и строку с текстом сообщения."""
+    """Отправляет сообщение в Telegram чат, определяемый переменной
+    окружения TELEGRAM_CHAT_ID. Принимает на вход два параметра:
+    экземпляр класса Bot и строку с текстом сообщения."""
     try:
         TELEGRAM_CHAT_ID
     except Exception as error:
@@ -68,7 +72,9 @@ def send_message(bot, message):
             )
             logger.info(f'В чат телеграм отправлено сообщение - "{message}".')
         except Exception as error:
-            logger.error(f'Cбой при отправке сообщения в Telegram. Ошибка - {error}.')
+            logger.error(
+                f'Cбой при отправке сообщения в Telegram. Ошибка - {error}.'
+                )
 
 def get_api_answer(current_timestamp):
     """Делает запрос к единственному эндпоинту API-сервиса. В качестве
@@ -78,7 +84,9 @@ def get_api_answer(current_timestamp):
     try:
         all([TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
     except Exception as error:
-        logger.critical(f'Не удалось создать экземпляр bot. Ошибка - {error}.')
+        logger.critical(
+            f'Не удалось создать экземпляр bot. Ошибка - {error}.'
+            )
     else:
         bot = Bot(token=TELEGRAM_TOKEN)
     global gaamscn2
@@ -86,10 +94,13 @@ def get_api_answer(current_timestamp):
     global gaame
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
-        # В случае успешного запроса должна вернуть ответ API, преобразовав его из формата JSON к типам данных Python.
+        # В случае успешного запроса должна вернуть ответ API,
+        # преобразовав его из формата JSON к типам данных Python.
     # Эксперимент по обработке различных видов ошибок
     except ConnectionError as ce:
-        message_exception = str(f'Ошибка ConnectionError при запросе к API: {ce}.')
+        message_exception = str(
+            f'Ошибка ConnectionError при запросе к API: {ce}.'
+            )
         if message_exception != gaamce:
             logger.error(message_exception)
             send_message(bot, message_exception)
@@ -108,7 +119,9 @@ def get_api_answer(current_timestamp):
         pass
     if response.status_code != 200:
         status_code = response.status_code
-        message_status_code_not_200 = f'Ошибка запроса к API. Код не равен 200. Код -{status_code}.'
+        message_status_code_not_200 = (
+            f'Ошибка запроса к API. Код не равен 200. Код -{status_code}.'
+            )
         if message_status_code_not_200 != gaamscn2:
             logger.error(message_status_code_not_200)
             send_message(bot, message_status_code_not_200)
@@ -122,14 +135,19 @@ def get_api_answer(current_timestamp):
         return response.json()
 
 def check_response(response):
-    """Проверяет ответ API на корректность. Получает ответ API, приведенный к типам данных Python."""
+    """Проверяет ответ API на корректность. Получает ответ API,
+    приведенный к типам данных Python."""
     try:
         all([TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
     except Exception as error:
-        logger.critical(f'Не удалось создать экземпляр bot. Ошибка - {error}.')
+        logger.critical(
+            f'Не удалось создать экземпляр bot. Ошибка - {error}.'
+            )
     else:
         bot = Bot(token=TELEGRAM_TOKEN)
-    # Если ответ API соответствует ожиданиям, то функция должна вернуть список домашних работ (он может быть и пустым), доступный в ответе API по ключу 'homeworks'.
+    # Если ответ API соответствует ожиданиям, то функция должна вернуть
+    # список домашних работ (он может быть и пустым), доступный в
+    # ответе API по ключу 'homeworks'.
     homeworks = response['homeworks']  # достаём list работ
     homework = homeworks[0]  # достаём dict одной работы из list
     current_date = response['current_date']
@@ -149,11 +167,14 @@ def check_response(response):
 
 def parse_status(homework):
     """Извлекает из информации о конкретной домашней работе статус этой
-    работы. В качестве параметра функция получает только один элемент из списка домашних работ."""
+    работы. В качестве параметра функция получает только один элемент
+    из списка домашних работ."""
     try:
         all([TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
     except Exception as error:
-        logger.critical(f'Не удалось создать экземпляр bot. Ошибка - {error}.')
+        logger.critical(
+            f'Не удалось создать экземпляр bot. Ошибка - {error}.'
+            )
     else:
         bot = Bot(token=TELEGRAM_TOKEN)
     if 'homework_name' not in homework:
@@ -165,18 +186,23 @@ def parse_status(homework):
     homework_status = homework['status']
     if homework_status in HOMEWORK_STATUSES:
         verdict = HOMEWORK_STATUSES[homework_status]
-        # В случае успеха, функция возвращает подготовленную для отправки в Telegram строку, содержащую один из вердиктов словаря HOMEWORK_STATUSES.
-        return f'Изменился статус проверки работы "{homework_name}". {verdict}'
+        # В случае успеха, функция возвращает подготовленную для
+        # отправки в Telegram строку, содержащую один из вердиктов
+        # словаря HOMEWORK_STATUSES.
+        return (
+            f'Изменился статус проверки работы "{homework_name}". {verdict}'
+            )
     else:
-        message = f'Переменная homework_status со значение "{homework_status}" не соответствует ожидаемым.'
+        message = ('Переменная homework_status со значение ' +
+            f'"{homework_status}" не соответствует ожидаемым.')
         logger.error(message)
         send_message(bot, message)
         raise NameError(message)
 
 def check_tokens():
-    """Проверяет доступность переменных окружения, которые необходимы для
-    работы программы. Если отсутствует хотя бы одна переменная окружения —
-    функция должна вернуть False, иначе — True."""
+    """Проверяет доступность переменных окружения, которые необходимы 
+    для работы программы. Если отсутствует хотя бы одна переменная 
+    окружения — функция должна вернуть False, иначе — True."""
     return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 def main():
@@ -184,11 +210,13 @@ def main():
     try:
         all([TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
     except Exception as error:
-        logger.critical(f'Не удалось создать экземпляр bot. Ошибка - {error}.')
+        logger.critical(
+            f'Не удалось создать экземпляр bot. Ошибка - {error}.'
+            )
     else:
         bot = Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = 1646906700  # Временная отметка начала моего обучения 
-    # на курсе
+    current_timestamp = 1646906700  # Временная отметка начала моего 
+    # обучения на курсе
     current_homework = {}
     logger.info(f'current_homework {current_homework}')
     while True:
@@ -199,7 +227,8 @@ def main():
             # Проверить ответ.
             homework = check_response(response)
             if homework != current_homework:
-                # Если есть обновления — получить статус работы из обновления и отправить сообщение в Telegram.
+                # Если есть обновления — получить статус работы из
+                # обновления и отправить сообщение в Telegram.
                 message = parse_status(homework)
                 send_message(bot, message)
                 current_homework = homework
