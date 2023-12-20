@@ -20,6 +20,7 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 RETRY_TIME = 600
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
+# ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/111' # 404
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
 HOMEWORK_VERDICTS = {
@@ -45,6 +46,7 @@ def send_message(bot, message):
     - строку с текстом сообщения.
     """
     logger.info(f'Инициализируем объект bot - {bot}.')
+    # logger.error(f'Ошибка инициализации объекта bot - {bot}.')
     if not bot:
         message = f'Ошибка инициализации объекта bot - {bot}.'
         logger.error(message, exc_info=True)
@@ -55,6 +57,7 @@ def send_message(bot, message):
             text=message,
         )
         logger.info(f'В чат отправлено сообщение - "{message}".')
+        # logger.error(f'Ошибка отправки сообщения в чат - "{message}".')
 
 
 def get_api_answer(current_timestamp):
@@ -66,7 +69,9 @@ def get_api_answer(current_timestamp):
     params = {'from_date': timestamp}
     bot = Bot(token=TELEGRAM_TOKEN)
     global status_bank
+    # status_bank = ''
     response = requests.get(ENDPOINT, headers=HEADERS, params=params)
+    # response = requests.get(ENDPOINT)
     status_code = response.status_code
     logger.info(f'status_code - {status_code}')
     if response.status_code != HTTPStatus.OK:
@@ -77,12 +82,18 @@ def get_api_answer(current_timestamp):
             logger.error(message_status_code_not_200)
             send_message(bot, message_status_code_not_200)
             status_bank = message_status_code_not_200
+            # sys.exit(message_status_code_not_200)
+            # time.sleep(RETRY_TIME)
         else:
             logger.error(message_status_code_not_200)
+            # sys.exit(message_status_code_not_200)
+            # time.sleep(RETRY_TIME)
+            # raise MyCustomError(message_status_code_not_200)
     else:
         # В случае успешного запроса должна вернуть ответ API,
         # преобразовав его из формата JSON к типам данных Python.
         response = response.json()
+        logger.info(f'response в get_api_answer *********** {response}.')
         return response
 
 
@@ -95,7 +106,7 @@ def check_response(response):
     """
     bot = Bot(token=TELEGRAM_TOKEN)
     if not isinstance(response, dict):
-        message = 'Ответ АПИ (response) не словарь.'
+        message = f'Ответ АПИ (response) не словарь, а {type(response)}.'
         logger.error(message)
         raise TypeError(message)
     else:
@@ -208,6 +219,7 @@ def main():
         sys.exit(message)
     else:
         current_homework = {}
+        # current_response = {}
         while True:
             try:
                 bot = Bot(token=TELEGRAM_TOKEN)
@@ -218,6 +230,7 @@ def main():
                 logger.info(
                     f'current_homework из main - {current_homework}.'
                 )
+                # logger.info(f'current_homeworks из main - {current_homeworks}.')
                 current_timestamp = 1646906700
                 # Сделать запрос к API.
                 response = get_api_answer(current_timestamp)
